@@ -40,7 +40,31 @@ patch("libs/hbb_common/src/config.rs", [
     (r'pub const RS_PUB_KEY: &str = "[^"]*";', f'pub const RS_PUB_KEY: &str = "{key}";'),
     (r'pub static ref APP_NAME: RwLock<String> = RwLock::new\("RustDesk"\.to_owned\(\)\);',
      f'pub static ref APP_NAME: RwLock<String> = RwLock::new("{app}".to_owned());'),
+    # eigener Server gilt nicht als „öffentlicher Server“ (sonst Hinweis „richten Sie Ihren eigenen Server ein“)
+    (r'pub static ref PROD_RENDEZVOUS_SERVER: RwLock<String> = RwLock::new\("".to_owned\(\)\);',
+     f'pub static ref PROD_RENDEZVOUS_SERVER: RwLock<String> = RwLock::new("{server}".to_owned());'),
 ], regex=True)
+
+# 1b. QuickSupport: Heißt die Programmdatei „…QuickSupport…“, startet das Programm im kompakten Modus
+#     „nur eingehend“ (wie TeamViewer QuickSupport). Installiertes Programm und Techniker bleiben unverändert.
+patch("src/common.rs", [(
+    "pub fn load_custom_client() {\n",
+    "pub fn load_custom_client() {\n"
+    "    #[cfg(windows)]\n"
+    "    {\n"
+    "        let csg_name = std::env::var(PORTABLE_APPNAME_RUNTIME_ENV_KEY)\n"
+    "            .ok()\n"
+    "            .or_else(|| std::env::current_exe().ok().map(|p| p.to_string_lossy().to_string()))\n"
+    "            .unwrap_or_default()\n"
+    "            .to_lowercase();\n"
+    "        if csg_name.contains(\"quicksupport\") {\n"
+    "            config::HARD_SETTINGS\n"
+    "                .write()\n"
+    "                .unwrap()\n"
+    "                .insert(\"conn-type\".to_owned(), \"incoming\".to_owned());\n"
+    "        }\n"
+    "    }\n",
+)])
 
 # 2. Windows-Programm: Name in Fenster und Dateiinfo
 patch("flutter/windows/runner/main.cpp", [('std::wstring app_name = L"RustDesk";', f'std::wstring app_name = L"{app}";')])
