@@ -273,6 +273,8 @@ jobs:
         # --hwcodec is shared by all Windows targets; per-target extras (e.g. --vram) come from the matrix
         python3 .\build.py --portable --flutter --skip-portable-pack --hwcodec ${{ matrix.job.build-args }}
         mv ./flutter/build/windows/${{ matrix.job.flutter-arch }}/runner/Release ./rustdesk
+        # CSG: Programmdatei wie den Programmnamen benennen (Installation, Dienst und Link erwarten <Name>.exe)
+        Rename-Item -Path ./rustdesk/rustdesk.exe -NewName CSGFernwartung.exe
 
         # Download usbmmidd_v2.zip and extract it to ./rustdesk
         Invoke-WebRequest -Uri https://github.com/rustdesk-org/rdev/releases/download/usbmmidd_v2/usbmmidd_v2.zip -OutFile usbmmidd_v2.zip
@@ -345,7 +347,7 @@ jobs:
         sed -i '/dpiAware/d' res/manifest.xml
         pushd ./libs/portable
         pip3 install -r requirements.txt
-        python3 ./generate.py -f ../../rustdesk/ -o . -e ../../rustdesk/rustdesk.exe
+        python3 ./generate.py -f ../../rustdesk/ -o . -e ../../rustdesk/CSGFernwartung.exe
         popd
         mkdir -p ./SignOutput
         mv ./target/release/rustdesk-portable-packer.exe ./SignOutput/CSGFernwartung-${{ env.VERSION }}-${{ matrix.job.arch }}.exe
