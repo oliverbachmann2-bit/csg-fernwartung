@@ -2,5 +2,10 @@
   "app_name": "CSGFernwartung",
   "product_name": "CSG-Computer Fernwartung",
   "server": "csg-hilfe.de",
-  "key": "Vhf+Ywx35tRtTBKFeqiYogX0uDCJagSKGmVdpXjoof8="
+  "key": "Vhf+Ywx35tRtTBKFeqiYogX0uDCJagSKGmVdpXjoof8=",
+  "display": {
+    "image_quality": "custom",
+    "custom_image_quality": "120",
+    "custom-fps": "30"
+  }
 }
